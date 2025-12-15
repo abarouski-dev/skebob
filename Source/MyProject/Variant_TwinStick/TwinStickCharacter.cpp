@@ -50,6 +50,8 @@ void ATwinStickCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	Health = MaxHealth;
+
 	// update the items count
 	UpdateItems();
 }
@@ -73,6 +75,8 @@ void ATwinStickCharacter::NotifyControllerChanged()
 void ATwinStickCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	UE_LOG(LogTemp, Warning, TEXT("%f"), Health);
 
 	// get the current rotation
 	const FRotator OldRotation = GetActorRotation();
@@ -282,6 +286,26 @@ void ATwinStickCharacter::HandleDamage(float Damage, const FVector& DamageDirect
 
 	// pass control to BP
 	BP_Damaged();
+
+	Health -= Damage;
+	OnHealthChanged.Broadcast(Health);
+	UpdateHealth();
+}
+
+void ATwinStickCharacter::UpdateHealth()
+{
+	if (Health > MaxHealth) {
+		Health = MaxHealth;
+	}
+	if (Health <= 0)
+	{
+		Death();
+	}
+}
+
+void ATwinStickCharacter::Death()
+{
+	Destroy();
 }
 
 void ATwinStickCharacter::AddPickup()

@@ -20,6 +20,9 @@ class ATwinStickProjectile;
  *  Automatically rotates to face the aim direction.
  *  Fires projectiles and spawns AoE attacks.
  */
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float, NewHealth);
+
 UCLASS(abstract)
 class ATwinStickCharacter : public ACharacter
 {
@@ -34,6 +37,16 @@ class ATwinStickCharacter : public ACharacter
 	UCameraComponent* Camera;
 
 protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health HP")
+	float Health;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health HP")
+	float MaxHealth;
+
+	UPROPERTY(BlueprintAssignable, Category = "Health HP")
+	FOnHealthChanged OnHealthChanged;
+
 
 	/** Movement input action */
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -163,6 +176,10 @@ protected:
 
 	/** Performs an AoE Attack */
 	void AoEAttack(const FInputActionValue& Value);
+
+	void UpdateHealth();
+
+	void Death();
 
 public:
 
