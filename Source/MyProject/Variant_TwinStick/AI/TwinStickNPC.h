@@ -78,4 +78,7 @@ protected:
 
 	/** Called from timer to complete the destruction process for this NPC */
 	void DeferredDestroy();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NPC")
+	TArray<TSubclassOf<AActor>> ActorsToSpawnClass;
 };

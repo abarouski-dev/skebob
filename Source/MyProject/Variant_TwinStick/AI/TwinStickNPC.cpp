@@ -14,7 +14,7 @@
 
 ATwinStickNPC::ATwinStickNPC()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true; // <- 16 строка
 
 	// ensure we spawn an AI controller when we're spawned
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -65,6 +65,37 @@ void ATwinStickNPC::Destroyed()
 	if (ATwinStickGameMode* GM = Cast<ATwinStickGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		GM->DecreaseNPCs();
+	}
+
+	if (ActorsToSpawnClass.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PossibleActorsToSpawn array is empty!"));
+		return;
+	}
+
+	UWorld* const World = GetWorld();
+	if (World == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("World is null"));
+		return;
+	}
+
+	// 2. Выбираем случайный индекс из массива
+	int32 RandomIndex = FMath::RandRange(0, ActorsToSpawnClass.Num() - 1);
+
+	// 3. Получаем выбранный класс
+	TSubclassOf<AActor> ClassToSpawn = ActorsToSpawnClass[RandomIndex];
+
+	// 4. Проверяем, что класс валиден перед спавном
+	if (ClassToSpawn != nullptr)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = GetInstigator();
+
+		// Спавн выбранного актера
+		AActor* SpawnedActor = World->SpawnActor<AActor>(ClassToSpawn, GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
+		UE_LOG(LogTemp, Warning, TEXT("Spawn Sucesfull"));
 	}
 
 	Super::Destroyed();
