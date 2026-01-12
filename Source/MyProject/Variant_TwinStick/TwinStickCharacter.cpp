@@ -13,6 +13,10 @@
 #include "TwinStickProjectile.h"
 #include "Engine/World.h"
 #include "TimerManager.h"
+#include "Stats/HealthComponent.h"
+#include "Stats/StaminaComponent.h"
+#include "Stats/ArmorComponent.h"
+#include "UI/PlayerHUDWidget.h"
 
 ATwinStickCharacter::ATwinStickCharacter()
 {
@@ -44,14 +48,31 @@ ATwinStickCharacter::ATwinStickCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 640.0f, 0.0f);
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+
+	HealthComp = CreateDefaultSubobject<UHealthComponent>("HealthComp");
+	StaminaComp = CreateDefaultSubobject<UStaminaComponent>("StaminaComp");
+	ArmorComp = CreateDefaultSubobject<UArmorComponent>("ArmorComp");
 }
 
 void ATwinStickCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	//Health = MaxHealth;
+
 	// update the items count
 	UpdateItems();
+
+	if (HUDWidgetClass)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		if (PC && HUDWidgetClass)
+		{
+			HUDWidget = CreateWidget<UPlayerHUDWidget>(PC, HUDWidgetClass);
+			HUDWidget->AddToViewport();
+			HUDWidget->BindToAttributes(this);
+		}
+	}
 }
 
 void ATwinStickCharacter::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -73,6 +94,8 @@ void ATwinStickCharacter::NotifyControllerChanged()
 void ATwinStickCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	//UE_LOG(LogTemp, Warning, TEXT("%f"), Health);
 
 	// get the current rotation
 	const FRotator OldRotation = GetActorRotation();
@@ -273,6 +296,7 @@ void ATwinStickCharacter::DoAoEAttack()
 
 void ATwinStickCharacter::HandleDamage(float Damage, const FVector& DamageDirection)
 {
+	HealthComp->ApplyDamage(Damage);
 	// calculate the knockback vector
 	FVector LaunchVector = DamageDirection;
 	LaunchVector.Z = 0.0f;
@@ -281,7 +305,27 @@ void ATwinStickCharacter::HandleDamage(float Damage, const FVector& DamageDirect
 	LaunchCharacter(LaunchVector * KnockbackStrength, true, true);
 
 	// pass control to BP
-	BP_Damaged();
+	//BP_Damaged();
+
+	/*Health -= Damage;
+	OnHealthChanged.Broadcast(Health);
+	UpdateHealth();*/
+}
+
+void ATwinStickCharacter::UpdateHealth()
+{
+	//if (Health > MaxHealth) {
+	//	Health = MaxHealth;
+	//}
+	//if (Health <= 0)
+	//{
+	//	Death();
+	//}
+}
+
+void ATwinStickCharacter::Death()
+{
+	Destroy();
 }
 
 void ATwinStickCharacter::AddPickup()
