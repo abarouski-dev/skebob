@@ -21,7 +21,7 @@ protected:
 
 	/** Type of NPC to spawn */
 	UPROPERTY(EditAnywhere, Category="NPC Spawner")
-	TSubclassOf<ATwinStickNPC> NPCClass;
+	TArray<TSubclassOf<ATwinStickNPC>> NPCClass;
 	
 	/** Time delay between enemy group spawns */
 	UPROPERTY(EditAnywhere, Category="NPC Spawner", meta = (ClampMin = 0, ClampMax = 20, Units = "s"))

@@ -75,7 +75,7 @@ void ATwinStickSpawner::SpawnNPC()
 		SpawnTransform.SetLocation(SpawnLoc);
 
 		// spawn the NPC
-		ATwinStickNPC* NPC = GetWorld()->SpawnActor<ATwinStickNPC>(NPCClass, SpawnTransform);
+		ATwinStickNPC* NPC = GetWorld()->SpawnActor<ATwinStickNPC>(NPCClass[FMath::Rand()% NPCClass.Num()], SpawnTransform);
 	}
 
 	// increase the spawn counter
