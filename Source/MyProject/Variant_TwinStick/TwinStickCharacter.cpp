@@ -296,7 +296,21 @@ void ATwinStickCharacter::DoAoEAttack()
 
 void ATwinStickCharacter::HandleDamage(float Damage, const FVector& DamageDirection)
 {
-	HealthComp->ApplyDamage(Damage);
+	if (ArmorComp->CurrentValue > 0) 
+	{
+		ArmorComp->ApplyDamage(1.f);
+	}
+	else 
+	{
+		if (HealthComp->CurrentValue > Damage) 
+		{
+			HealthComp->ApplyDamage(Damage);
+		}
+		else 
+		{
+			Death();
+		}
+	}
 	// calculate the knockback vector
 	FVector LaunchVector = DamageDirection;
 	LaunchVector.Z = 0.0f;
