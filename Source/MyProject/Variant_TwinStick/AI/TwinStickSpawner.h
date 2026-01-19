@@ -60,6 +60,8 @@ public:
 	/** Constructor */
 	ATwinStickSpawner();
 
+	static void StartSpawning();
+
 protected:
 
 	/** Gameplay initialization */

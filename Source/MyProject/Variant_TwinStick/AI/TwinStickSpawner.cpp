@@ -16,6 +16,11 @@ ATwinStickSpawner::ATwinStickSpawner()
 
 }
 
+void ATwinStickSpawner::StartSpawning()
+{
+
+}
+
 void ATwinStickSpawner::BeginPlay()
 {
 	Super::BeginPlay();
