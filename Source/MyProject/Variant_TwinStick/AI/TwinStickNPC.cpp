@@ -11,6 +11,7 @@
 #include "Engine/World.h"
 #include "TwinStickNPCDestruction.h"
 #include "TimerManager.h"
+#include <Variant_TwinStick/AI/SpawnersController.h>
 
 int ATwinStickNPC::count = 0;
 
@@ -113,13 +114,13 @@ void ATwinStickNPC::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, 
 	if (ATwinStickCharacter* PlayerCharacter = Cast<ATwinStickCharacter>(Other))
 	{
 		// apply damage to the character
-		PlayerCharacter->HandleDamage(1.0f, GetActorForwardVector());
+		PlayerCharacter->HandleDamage(1.0f * ASpawnersController::Instance->EnemyDamageMultyplayer, GetActorForwardVector());
 	}
 }
 
-void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector, int32 damage)
+void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector, float damage)
 {
-	healse -= damage;
+	healse -= damage / ASpawnersController::Instance->EnemyHPMultyplayer;
 	if (healse > 0) return; // если здоровье больше 0, не уничтожаем NPC
 
 

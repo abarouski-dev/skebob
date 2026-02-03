@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/ProgressBar.h"
+#include "Components/TextBlock.h"
 #include "PlayerHUDWidget.generated.h"
 
 class UHealthComponent;
@@ -27,6 +28,9 @@ public:
 
     UPROPERTY(meta = (BindWidget))
     UProgressBar* PB_Armor;
+    
+    UPROPERTY(meta = (BindWidget))
+    UTextBlock* waweNum;
 
     // Call this after widget creation
     UFUNCTION(BlueprintCallable)
@@ -43,7 +47,10 @@ protected:
     UFUNCTION()
     void OnArmorChanged(float Current, float Max);
 
+    virtual void NativeDestruct() override;
+
 private:
+
 
     UPROPERTY()
     UHealthComponent* HealthComp;
@@ -53,4 +60,10 @@ private:
 
     UPROPERTY()
     UArmorComponent* ArmorComp;
+
+public:
+	static UPlayerHUDWidget* Instance;
+
+    UFUNCTION(BlueprintCallable)
+    void SetWaweValue(const FText& NewText);
 };

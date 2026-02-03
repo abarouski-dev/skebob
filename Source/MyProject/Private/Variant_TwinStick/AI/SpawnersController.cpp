@@ -4,6 +4,7 @@
 #include "Variant_TwinStick/AI/SpawnersController.h"
 #include "Variant_TwinStick/AI/TwinStickNPC.h"
 #include "Variant_TwinStick/AI/TwinStickSpawner.h"
+#include "UI/PlayerHUDWidget.h"
 
 ASpawnersController* ASpawnersController::Instance = nullptr;
 // Sets default values
@@ -22,12 +23,17 @@ void ASpawnersController::BeginPlay()
 	{
 		Spawners[i]->SpawnNPCGroup();
 	}
+
+	if (UPlayerHUDWidget::Instance != nullptr) UPlayerHUDWidget::Instance->SetWaweValue(FText::FromString(FString::FromInt(waweNumber)));
+
+    ATwinStickNPC::count = 0;
 }
 
 void ASpawnersController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-    UE_LOG(LogTemp, Warning, TEXT("ATwinStickNPC::count"));
+
+	UE_LOG(LogTemp, Warning, TEXT("ATwinStickNPC::count: %d"), ATwinStickNPC::count);
 	if(ATwinStickNPC::count == 0)    // Add this include at the top of the file
 	{
 		for (int i = 0; i < Spawners.Num(); i++)
@@ -36,6 +42,10 @@ void ASpawnersController::Tick(float DeltaTime)
 			else return;
 		}
 
+		waweNumber++;
+		if (UPlayerHUDWidget::Instance != nullptr) UPlayerHUDWidget::Instance->SetWaweValue(FText::FromString(FString::FromInt(waweNumber)));
 		SpawnGroupSize += SpawnGroupSizeIncrise;
+		EnemyHPMultyplayer += EnemyHPMultyplayerIncrise;
+		EnemyDamageMultyplayer += EnemyDamageMultyplayerIncrise;
 	}
 }

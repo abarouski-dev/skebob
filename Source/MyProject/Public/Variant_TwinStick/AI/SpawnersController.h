@@ -8,6 +8,7 @@
 
 class ATwinStickSpawner;
 class ATwinStickNPC;
+class UPlayerHUDWidget;
 
 UCLASS()
 class MYPROJECT_API ASpawnersController : public AActor
@@ -26,6 +27,9 @@ protected:
 
 public:
 	static ASpawnersController* Instance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+	UPlayerHUDWidget* widget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spawners")
 	TArray<ATwinStickSpawner*> Spawners;
@@ -55,6 +59,20 @@ public:
 	
 	UPROPERTY(EditAnywhere, Category = "NPC Spawner", meta = (ClampMin = 0, ClampMax = 10))
 	int32 SpawnGroupSizeIncrise = 1;
+	UPROPERTY(EditAnywhere, Category = "NPC Spawner", meta = (ClampMin = 0, ClampMax = 10))
+	float EnemyHPMultyplayer = 1; 
+	
+	UPROPERTY(EditAnywhere, Category = "NPC Spawner", meta = (ClampMin = 0, ClampMax = 10))
+	float EnemyHPMultyplayerIncrise = 0.25f;
+	
+	UPROPERTY(EditAnywhere, Category = "NPC Spawner", meta = (ClampMin = 0, ClampMax = 10))
+	float EnemyDamageMultyplayer = 1; 
+	
+	UPROPERTY(EditAnywhere, Category = "NPC Spawner", meta = (ClampMin = 0, ClampMax = 10))
+	float EnemyDamageMultyplayerIncrise = 0.25f;
+
+	int waweNumber = 1;
+	
 	
 	virtual void Tick(float DeltaTime) override;
 };

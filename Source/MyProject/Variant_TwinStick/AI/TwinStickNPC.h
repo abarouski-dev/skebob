@@ -52,7 +52,8 @@ public:
 
 	static int count;
 
-	int32 healse = 3;
+	UPROPERTY(EditAnywhere, Category = "NPC")
+	float healse = 3;
 
 public:
 
@@ -76,7 +77,7 @@ protected:
 public:
 
 	/** Tells the NPC to process a projectile impact */
-	void ProjectileImpact(const FVector& ForwardVector, int32 damage);
+	void ProjectileImpact(const FVector& ForwardVector, float damage);
 
 protected:
 
