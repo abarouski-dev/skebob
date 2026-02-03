@@ -9,11 +9,11 @@
 #include "Kismet/GameplayStatics.h"
 #include "TwinStickNPC.h"
 #include "TwinStickGameMode.h"
+#include <Variant_TwinStick/AI/SpawnersController.h>
 
 ATwinStickSpawner::ATwinStickSpawner()
 {
  	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 void ATwinStickSpawner::StartSpawning()
@@ -39,10 +39,10 @@ void ATwinStickSpawner::BeginPlay()
 	}
 
 	// set up the spawn timer
-	GetWorld()->GetTimerManager().SetTimer(SpawnGroupTimer, this, &ATwinStickSpawner::SpawnNPCGroup, SpawnGroupDelay, true);
+	//GetWorld()->GetTimerManager().SetTimer(SpawnGroupTimer, this, &ATwinStickSpawner::SpawnNPCGroup, SpawnGroupDelay, true);
 
 	// spawn the first group of NPCs
-	SpawnNPCGroup();
+	//SpawnNPCGroup();
 }
 
 void ATwinStickSpawner::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -50,12 +50,14 @@ void ATwinStickSpawner::EndPlay(EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 
 	// clear the spawn timers
-	GetWorld()->GetTimerManager().ClearTimer(SpawnGroupTimer);
+	//GetWorld()->GetTimerManager().ClearTimer(SpawnGroupTimer);
 	GetWorld()->GetTimerManager().ClearTimer(SpawnNPCTimer);
 }
 
 void ATwinStickSpawner::SpawnNPCGroup()
 {
+	if (SpawnCount == 0) return;
+	UE_LOG(LogTemp, Warning, TEXT("hueta"));
 	// reset the group spawn counter
 	SpawnCount = 0;
 
@@ -64,7 +66,7 @@ void ATwinStickSpawner::SpawnNPCGroup()
 	{
 		if (GM->CanSpawnNPCs())
 		{
-			SpawnNPC();
+			GetWorld()->GetTimerManager().SetTimer(SpawnNPCTimer, this, &ATwinStickSpawner::SpawnNPC, ASpawnersController::Instance->SpawnGroupDelay + FMath::RandRange(ASpawnersController::Instance->MinSpawnDelay, ASpawnersController::Instance->MaxSpawnDelay), false);
 		}
 	}
 }
@@ -75,21 +77,20 @@ void ATwinStickSpawner::SpawnNPC()
 
 	// find a random point around the spawner
 	FVector SpawnLoc;
-	if (UNavigationSystemV1::K2_GetRandomReachablePointInRadius(GetWorld(), GetActorLocation(), SpawnLoc, SpawnRadius, NavData))
+	if (UNavigationSystemV1::K2_GetRandomReachablePointInRadius(GetWorld(), GetActorLocation(), SpawnLoc, ASpawnersController::Instance->SpawnRadius, NavData))
 	{
 		SpawnTransform.SetLocation(SpawnLoc);
 
 		// spawn the NPC
-		ATwinStickNPC* NPC = GetWorld()->SpawnActor<ATwinStickNPC>(NPCClass[FMath::Rand()% NPCClass.Num()], SpawnTransform);
+		ATwinStickNPC* NPC = GetWorld()->SpawnActor<ATwinStickNPC>(ASpawnersController::Instance->NPCClass[FMath::Rand()% ASpawnersController::Instance->NPCClass.Num()], SpawnTransform);
 	}
 
 	// increase the spawn counter
 	++SpawnCount;
 
 	// do we still have enemies left to spawn?
-	if (SpawnCount < SpawnGroupSize)
+	if (SpawnCount < ASpawnersController::Instance->SpawnGroupSize)
 	{
-		GetWorld()->GetTimerManager().SetTimer(SpawnNPCTimer, this, &ATwinStickSpawner::SpawnNPC, FMath::RandRange(MinSpawnDelay, MaxSpawnDelay), false);
+		GetWorld()->GetTimerManager().SetTimer(SpawnNPCTimer, this, &ATwinStickSpawner::SpawnNPC, FMath::RandRange(ASpawnersController::Instance->MinSpawnDelay, ASpawnersController::Instance->MaxSpawnDelay), false);
 	}
-
 }

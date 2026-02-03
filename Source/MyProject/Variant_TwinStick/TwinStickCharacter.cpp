@@ -266,6 +266,7 @@ void ATwinStickCharacter::DoShoot()
 	ProjectileTransform.SetLocation(ProjectileLocation);
 
 	ATwinStickProjectile* Projectile = GetWorld()->SpawnActor<ATwinStickProjectile>(ProjectileClass, ProjectileTransform);
+	Projectile->damage = 1;
 }
 
 void ATwinStickCharacter::DoAoEAttack()

@@ -50,6 +50,10 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="NPC")
 	bool bHit = false;
 
+	static int count;
+
+	int32 healse = 3;
+
 public:
 
 	/** Constructor */
@@ -72,7 +76,7 @@ protected:
 public:
 
 	/** Tells the NPC to process a projectile impact */
-	void ProjectileImpact(const FVector& ForwardVector);
+	void ProjectileImpact(const FVector& ForwardVector, int32 damage);
 
 protected:
 

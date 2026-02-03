@@ -12,6 +12,8 @@
 #include "TwinStickNPCDestruction.h"
 #include "TimerManager.h"
 
+int ATwinStickNPC::count = 0;
+
 ATwinStickNPC::ATwinStickNPC()
 {
 	PrimaryActorTick.bCanEverTick = true; // <- 16 строка
@@ -49,6 +51,8 @@ void ATwinStickNPC::BeginPlay()
 		GM->IncreaseNPCs();
 	}
 
+	count++;
+
 }
 
 void ATwinStickNPC::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -61,6 +65,7 @@ void ATwinStickNPC::EndPlay(EEndPlayReason::Type EndPlayReason)
 
 void ATwinStickNPC::Destroyed()
 {
+	count--;
 	// decrease the NPC counter so we can cap spawning if necessary
 	if (ATwinStickGameMode* GM = Cast<ATwinStickGameMode>(GetWorld()->GetAuthGameMode()))
 	{
@@ -98,6 +103,7 @@ void ATwinStickNPC::Destroyed()
 		UE_LOG(LogTemp, Warning, TEXT("Spawn Sucesfull"));
 	}
 
+
 	Super::Destroyed();
 }
 
@@ -111,8 +117,13 @@ void ATwinStickNPC::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, 
 	}
 }
 
-void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector)
+void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector, int32 damage)
 {
+	healse -= damage;
+	if (healse > 0) return; // если здоровье больше 0, не уничтожаем NPC
+
+
+
 	// only handle damage if we haven't been hit yet
 	if (bHit)
 	{

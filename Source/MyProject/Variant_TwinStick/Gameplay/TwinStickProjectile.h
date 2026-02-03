@@ -31,7 +31,7 @@ class ATwinStickProjectile : public AActor
 	UProjectileMovementComponent* ProjectileMovement;
 
 public:	
-
+	int32 damage = 1;
 	/** Constructor */
 	ATwinStickProjectile();
 
