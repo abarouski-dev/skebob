@@ -11,10 +11,13 @@
 #include "Engine/World.h"
 #include "TwinStickNPCDestruction.h"
 #include "TimerManager.h"
+#include <Variant_TwinStick/AI/SpawnersController.h>
+
+int ATwinStickNPC::count = 0;
 
 ATwinStickNPC::ATwinStickNPC()
 {
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true; // <- 16 строка
 
 	// ensure we spawn an AI controller when we're spawned
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -49,6 +52,8 @@ void ATwinStickNPC::BeginPlay()
 		GM->IncreaseNPCs();
 	}
 
+	count++;
+
 }
 
 void ATwinStickNPC::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -61,11 +66,44 @@ void ATwinStickNPC::EndPlay(EEndPlayReason::Type EndPlayReason)
 
 void ATwinStickNPC::Destroyed()
 {
+	count--;
 	// decrease the NPC counter so we can cap spawning if necessary
 	if (ATwinStickGameMode* GM = Cast<ATwinStickGameMode>(GetWorld()->GetAuthGameMode()))
 	{
 		GM->DecreaseNPCs();
 	}
+
+	if (ActorsToSpawnClass.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("PossibleActorsToSpawn array is empty!"));
+		return;
+	}
+
+	UWorld* const World = GetWorld();
+	if (World == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("World is null"));
+		return;
+	}
+
+	// 2. ¬ыбираем случайный индекс из массива
+	int32 RandomIndex = FMath::RandRange(0, ActorsToSpawnClass.Num() - 1);
+
+	// 3. ѕолучаем выбранный класс
+	TSubclassOf<AActor> ClassToSpawn = ActorsToSpawnClass[RandomIndex];
+
+	// 4. ѕровер€ем, что класс валиден перед спавном
+	if (ClassToSpawn != nullptr)
+	{
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.Owner = this;
+		SpawnParams.Instigator = GetInstigator();
+
+		// —павн выбранного актера
+		AActor* SpawnedActor = World->SpawnActor<AActor>(ClassToSpawn, GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
+		UE_LOG(LogTemp, Warning, TEXT("Spawn Sucesfull"));
+	}
+
 
 	Super::Destroyed();
 }
@@ -76,12 +114,17 @@ void ATwinStickNPC::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, 
 	if (ATwinStickCharacter* PlayerCharacter = Cast<ATwinStickCharacter>(Other))
 	{
 		// apply damage to the character
-		PlayerCharacter->HandleDamage(1.0f, GetActorForwardVector());
+		PlayerCharacter->HandleDamage(1.0f * ASpawnersController::Instance->EnemyDamageMultyplayer, GetActorForwardVector());
 	}
 }
 
-void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector)
+void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector, float damage)
 {
+	healse -= damage / ASpawnersController::Instance->EnemyHPMultyplayer;
+	if (healse > 0) return; // если здоровье больше 0, не уничтожаем NPC
+
+
+
 	// only handle damage if we haven't been hit yet
 	if (bHit)
 	{

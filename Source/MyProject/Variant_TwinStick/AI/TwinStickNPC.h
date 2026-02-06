@@ -50,6 +50,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="NPC")
 	bool bHit = false;
 
+	static int count;
+
+	UPROPERTY(EditAnywhere, Category = "NPC")
+	float healse = 3;
+
 public:
 
 	/** Constructor */
@@ -72,10 +77,13 @@ protected:
 public:
 
 	/** Tells the NPC to process a projectile impact */
-	void ProjectileImpact(const FVector& ForwardVector);
+	void ProjectileImpact(const FVector& ForwardVector, float damage);
 
 protected:
 
 	/** Called from timer to complete the destruction process for this NPC */
 	void DeferredDestroy();
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "NPC")
+	TArray<TSubclassOf<AActor>> ActorsToSpawnClass;
 };

@@ -14,12 +14,19 @@ class APlayerController;
 class UInputAction;
 class ATwinStickAoEAttack;
 class ATwinStickProjectile;
+class UHealthComponent;
+class UStaminaComponent;
+class UArmorComponent;
+class UPlayerHUDWidget;
 
 /**
  *  A player-controlled character for a Twin Stick Shooter game
  *  Automatically rotates to face the aim direction.
  *  Fires projectiles and spawns AoE attacks.
  */
+
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, float, NewHealth);
+
 UCLASS(abstract)
 class ATwinStickCharacter : public ACharacter
 {
@@ -34,6 +41,31 @@ class ATwinStickCharacter : public ACharacter
 	UCameraComponent* Camera;
 
 protected:
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health HP")
+	//float Health;
+	//
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health HP")
+	//float MaxHealth;
+
+	//UPROPERTY(BlueprintAssignable, Category = "Health HP")
+	//FOnHealthChanged OnHealthChanged;
+
+
+	UPROPERTY(VisibleAnywhere)
+	UHealthComponent* HealthComp;
+
+	UPROPERTY(VisibleAnywhere)
+	UStaminaComponent* StaminaComp;
+
+	UPROPERTY(VisibleAnywhere)
+	UArmorComponent* ArmorComp;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI")
+	TSubclassOf<UPlayerHUDWidget> HUDWidgetClass;
+
+	UPROPERTY()
+	UPlayerHUDWidget* HUDWidget;
 
 	/** Movement input action */
 	UPROPERTY(EditAnywhere, Category="Input")
@@ -163,6 +195,10 @@ protected:
 
 	/** Performs an AoE Attack */
 	void AoEAttack(const FInputActionValue& Value);
+
+	void UpdateHealth();
+
+	void Death();
 
 public:
 
