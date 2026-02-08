@@ -43,7 +43,7 @@ void AWeaponFlamethrower::Fire()
 
     if (bHit)
     {
-        float TotalDamage = 0.5f + MyOwner->GetWeaponDamageModifier(EWeaponType::Flamethrower);
+        float TotalDamage = BaseDamage * MyOwner->GetWeaponDamageModifier();
 
         for (auto& Overlap : OutOverlaps)
         {

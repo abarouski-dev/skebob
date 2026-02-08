@@ -30,6 +30,9 @@ public:
     EWeaponType WeaponType;
 
     UPROPERTY(EditDefaultsOnly, Category = "Stats")
+    float BaseDamage;
+
+    UPROPERTY(EditDefaultsOnly, Category = "Stats")
     float TimeBetweenShots = 0.2f;
 
     UPROPERTY(EditDefaultsOnly, Category = "Stats")
@@ -46,7 +49,10 @@ public:
     void StartFire();
     void StopFire();
 
+    void ResetReloadState();
+
     int32 CurrentAmmo;
+
 protected:
     bool bIsReloading = false;
     FTimerHandle TimerHandle_HandleFiring;
