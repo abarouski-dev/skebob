@@ -391,35 +391,48 @@ void ATwinStickCharacter::OnFirePressed()
 void ATwinStickCharacter::OnFireReleased()
 {
 	if (CurrentWeapon) CurrentWeapon->StopFire();
+	UE_LOG(LogTemp, Warning, TEXT("StopFire called. Clearing firing timer."));
 }
 
 void ATwinStickCharacter::AddWeapon(EWeaponType Type, TSubclassOf<ABaseWeapon> WeaponClass)
 {
 	if (!WeaponClass) return;
 
-	if (EquippedWeapons.Contains(Type))
-	{
-		if (CurrentWeapon == EquippedWeapons[Type]) return;
-	}
-
 	if (CurrentWeapon)
 	{
 		CurrentWeapon->StopFire();
-		CurrentWeapon->Destroy();
+		GetWorldTimerManager().ClearAllTimersForObject(CurrentWeapon);
 
-		EquippedWeapons.Remove(Type);
+		CurrentWeapon->SetActorHiddenInGame(true);
+		CurrentWeapon->SetActorTickEnabled(false);
 	}
 
-	FActorSpawnParameters Params;
-	Params.Owner = this;
-	ABaseWeapon* NewWeapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass, Params);
-
-	if (NewWeapon)
+	if (EquippedWeapons.Contains(Type))
 	{
-		NewWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, NewWeapon->WeaponSocketName);
-		NewWeapon->MyOwner = this;
+		CurrentWeapon = EquippedWeapons[Type];
+		CurrentWeapon->SetActorHiddenInGame(false);
+		CurrentWeapon->SetActorTickEnabled(true);
 
-		EquippedWeapons.Add(Type, NewWeapon);
-		CurrentWeapon = NewWeapon;
+		CurrentWeapon->ResetReloadState();
 	}
+	else
+	{
+		FActorSpawnParameters Params;
+		Params.Owner = this;
+		CurrentWeapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass, Params);
+
+		if (CurrentWeapon)
+		{
+			CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, CurrentWeapon->WeaponSocketName);
+			CurrentWeapon->MyOwner = this;
+			CurrentWeapon->WeaponType = Type;
+			EquippedWeapons.Add(Type, CurrentWeapon);
+		}
+	}
+
+}
+
+void ATwinStickCharacter::UpgradeWeaponGlobal()
+{
+	GlobalWeaponLevel++;
 }

@@ -7,14 +7,12 @@
 
 void AWeaponProjectile::Fire()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Firing projectile weapon! Current ammo:"));
     if (CurrentAmmo <= 0)
     {
         Reload();
         return;
     }
 
-    UE_LOG(LogTemp, Warning, TEXT("222222222222222"));
     if (ProjectileClass && MyOwner)
     {
         CurrentAmmo--;
@@ -36,8 +34,7 @@ void AWeaponProjectile::Fire()
 
         if (Projectile)
         {
-            float BonusDamage = MyOwner->GetWeaponDamageModifier(WeaponType);
-            Projectile->damage = 1.0f + BonusDamage;
+            Projectile->damage = BaseDamage * MyOwner->GetWeaponDamageModifier();
         }
     }
 }

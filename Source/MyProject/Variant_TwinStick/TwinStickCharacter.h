@@ -243,11 +243,14 @@ public:
 	/** Gives the player a pickup item */
 	void AddPickup();
 
-	void UpgradeWeapon(EWeaponType Type) { WeaponUpgrades.FindOrAdd(Type)++; }
+	UPROPERTY()
+	int32 GlobalWeaponLevel = 0;
 
-	float GetWeaponDamageModifier(EWeaponType Type)
+	void UpgradeWeaponGlobal();
+
+	float GetWeaponDamageModifier()
 	{
-		return WeaponUpgrades.Contains(Type) ? WeaponUpgrades[Type] * 5.0f : 0.0f;
+		return 1.0f + (GlobalWeaponLevel * 0.2f);
 	}
 
 	void AddWeapon(EWeaponType Type, TSubclassOf<ABaseWeapon> WeaponClass);

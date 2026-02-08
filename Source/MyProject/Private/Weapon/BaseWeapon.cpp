@@ -19,7 +19,6 @@ void ABaseWeapon::StartFire()
 {
     if (bIsReloading) return;
 
-    // Стреляем сразу
     Fire();
 
     GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ABaseWeapon::Fire, TimeBetweenShots, true);
@@ -62,3 +61,14 @@ void ABaseWeapon::FinishReload()
     UE_LOG(LogTemp, Warning, TEXT("Reload Finished! Ammo: %d"), CurrentAmmo);
 }
 
+void ABaseWeapon::ResetReloadState()
+{
+    if (GetWorld())
+    {
+        GetWorldTimerManager().ClearTimer(TimerHandle_Reload);
+        GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
+    }
+
+    bIsReloading = false;
+    CurrentAmmo = MaxAmmo;
+}
