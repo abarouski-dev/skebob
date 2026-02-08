@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PlayerController.h"
+#include "Weapon/BaseWeapon.h"
 #include "TwinStickCharacter.generated.h"
 
 class USpringArmComponent;
@@ -238,7 +239,29 @@ public:
 	/** Gives the player a pickup item */
 	void AddPickup();
 
+	void UpgradeWeapon(EWeaponType Type) { WeaponUpgrades.FindOrAdd(Type)++; }
+
+	float GetWeaponDamageModifier(EWeaponType Type)
+	{
+		return WeaponUpgrades.Contains(Type) ? WeaponUpgrades[Type] * 5.0f : 0.0f;
+	}
+
+	void AddWeapon(EWeaponType Type, TSubclassOf<ABaseWeapon> WeaponClass);
+
 protected:
+
+	UPROPERTY()
+	TMap<EWeaponType, int32> WeaponUpgrades;
+
+	UPROPERTY()
+	TMap<EWeaponType, ABaseWeapon*> EquippedWeapons;
+
+	UPROPERTY()
+	ABaseWeapon* CurrentWeapon;
+
+	// ¬вод
+	void OnFirePressed();
+	void OnFireReleased();
 
 	/** Updates the items counter on the Game Mode */
 	void UpdateItems();

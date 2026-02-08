@@ -130,6 +130,15 @@ void ATwinStickCharacter::Tick(float DeltaTime)
 
 		SetActorRotation(TargetRot);
 	}
+
+	if (CurrentWeapon)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Ammo: %d"), CurrentWeapon->CurrentAmmo);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No weapon equipped!"));
+	}
 }
 
 void ATwinStickCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -144,7 +153,11 @@ void ATwinStickCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(StickAimAction, ETriggerEvent::Triggered, this, &ATwinStickCharacter::StickAim);
 		EnhancedInputComponent->BindAction(MouseAimAction, ETriggerEvent::Triggered, this, &ATwinStickCharacter::MouseAim);
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Triggered, this, &ATwinStickCharacter::Dash);
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ATwinStickCharacter::Shoot);
+		//EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ATwinStickCharacter::Shoot);
+
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &ATwinStickCharacter::OnFirePressed);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &ATwinStickCharacter::OnFireReleased);
+		
 		EnhancedInputComponent->BindAction(AoEAction, ETriggerEvent::Triggered, this, &ATwinStickCharacter::AoEAttack);
 
 	}
@@ -367,3 +380,43 @@ void ATwinStickCharacter::ResetAutoFire()
 	bAutoFireActive = false;
 }
 
+void ATwinStickCharacter::OnFirePressed()
+{
+	if (CurrentWeapon) CurrentWeapon->StartFire();
+}
+
+void ATwinStickCharacter::OnFireReleased()
+{
+	if (CurrentWeapon) CurrentWeapon->StopFire();
+}
+
+void ATwinStickCharacter::AddWeapon(EWeaponType Type, TSubclassOf<ABaseWeapon> WeaponClass)
+{
+	if (!WeaponClass) return;
+
+	if (EquippedWeapons.Contains(Type))
+	{
+		if (CurrentWeapon == EquippedWeapons[Type]) return;
+	}
+
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->StopFire();
+		CurrentWeapon->Destroy();
+
+		EquippedWeapons.Remove(Type);
+	}
+
+	FActorSpawnParameters Params;
+	Params.Owner = this;
+	ABaseWeapon* NewWeapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass, Params);
+
+	if (NewWeapon)
+	{
+		NewWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, NewWeapon->WeaponSocketName);
+		NewWeapon->MyOwner = this;
+
+		EquippedWeapons.Add(Type, NewWeapon);
+		CurrentWeapon = NewWeapon;
+	}
+}
