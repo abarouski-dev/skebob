@@ -249,7 +249,22 @@ public:
 	UPROPERTY()
 	int32 GlobalWeaponLevel = 0;
 
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
 	void UpgradeWeaponGlobal();
+	
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
+	void UpgradeArmor();
+	
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
+	void UpgradeHP();
+	
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
+	void UpgradeMaxHP();
+	
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
+	void UpgradeMaxSP();
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
+	void UpgradeRegenSP();
 
 	float GetWeaponDamageModifier()
 	{

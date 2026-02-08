@@ -31,7 +31,7 @@ protected:
 
 	/** Type of pickup to spawn on death */
 	UPROPERTY(EditAnywhere, Category="Pickup")
-	TSubclassOf<ATwinStickPickup> PickupClass;
+	TArray<TSubclassOf<AActor>> PickupClass;
 
 	/** Type of destruction proxy to spawn on death */
 	UPROPERTY(EditAnywhere, Category="Destruction")
