@@ -17,6 +17,7 @@
 #include "Stats/StaminaComponent.h"
 #include "Stats/ArmorComponent.h"
 #include "UI/PlayerHUDWidget.h"
+#include "EnhancedInputSubsystems.h"
 
 ATwinStickCharacter::ATwinStickCharacter()
 {
@@ -73,6 +74,17 @@ void ATwinStickCharacter::BeginPlay()
 			HUDWidget->BindToAttributes(this);
 		}
 	}
+
+	if (PlayerController)
+	{
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+
+		PlayerController->SetInputMode(InputMode);
+
+		PlayerController->bShowMouseCursor = bUsingMouse;
+	}
 }
 
 void ATwinStickCharacter::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -87,9 +99,26 @@ void ATwinStickCharacter::NotifyControllerChanged()
 {
 	Super::NotifyControllerChanged();
 
-	// set the player controller reference
 	PlayerController = Cast<APlayerController>(GetController());
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			if (InputMappingContext)
+			{
+				Subsystem->RemoveMappingContext(InputMappingContext);
+				Subsystem->AddMappingContext(InputMappingContext, 0);
+				UE_LOG(LogTemp, Warning, TEXT("SUCCESS: Mapping Context Added!"));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("FAIL: InputMappingContext is NULL in Blueprint!"));
+			}
+		}
+	}
 }
+
 
 void ATwinStickCharacter::Tick(float DeltaTime)
 {

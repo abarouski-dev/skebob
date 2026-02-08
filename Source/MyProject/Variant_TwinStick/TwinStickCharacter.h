@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/PlayerController.h"
 #include "Weapon/BaseWeapon.h"
+#include "InputMappingContext.h"
 #include "TwinStickCharacter.generated.h"
 
 class USpringArmComponent;
@@ -52,6 +53,8 @@ protected:
 	//UPROPERTY(BlueprintAssignable, Category = "Health HP")
 	//FOnHealthChanged OnHealthChanged;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputMappingContext* InputMappingContext;
 
 	UPROPERTY(VisibleAnywhere)
 	UHealthComponent* HealthComp;

@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
+#include "Weapon/WeaponPickup.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "TwinStickCharacter.h"
-#include "Weapon/WeaponPickup.h"
 
 AWeaponPickup::AWeaponPickup()
 {
