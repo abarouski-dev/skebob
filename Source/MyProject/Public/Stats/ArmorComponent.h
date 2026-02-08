@@ -17,4 +17,8 @@ public:
     {
         ApplyDelta(-Damage);
     }
+    void Apply(float Damage)
+    {
+        ApplyDelta(Damage);
+    }
 };

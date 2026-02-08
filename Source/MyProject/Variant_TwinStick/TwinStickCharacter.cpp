@@ -465,3 +465,29 @@ void ATwinStickCharacter::UpgradeWeaponGlobal()
 {
 	GlobalWeaponLevel++;
 }
+
+void ATwinStickCharacter::UpgradeArmor()
+{
+	ArmorComp->Apply(1);
+}
+
+void ATwinStickCharacter::UpgradeHP()
+{
+	HealthComp->ApplyDamage(-30);
+}
+
+void ATwinStickCharacter::UpgradeMaxHP()
+{
+	HealthComp->SetMaxValue(HealthComp->MaxValue + 10);
+}
+
+void ATwinStickCharacter::UpgradeMaxSP()
+{
+	StaminaComp->SetMaxValue(StaminaComp->MaxValue + 10);
+}
+
+void ATwinStickCharacter::UpgradeRegenSP()
+{
+	StaminaRegen += 1.0f;
+}
+
