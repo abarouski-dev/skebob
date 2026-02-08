@@ -51,7 +51,7 @@ void ATwinStickProjectile::NotifyHit(class UPrimitiveComponent* MyComp, AActor* 
 	if (ATwinStickNPC* NPC = Cast<ATwinStickNPC>(Other))
 	{
 		// tell the NPC it's been hit
-		NPC->ProjectileImpact(FVector::ZeroVector);
+		NPC->ProjectileImpact(FVector::ZeroVector, damage);
 
 		// destroy this projectile
 		Destroy();

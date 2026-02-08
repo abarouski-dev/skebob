@@ -11,6 +11,9 @@
 #include "Engine/World.h"
 #include "TwinStickNPCDestruction.h"
 #include "TimerManager.h"
+#include <Variant_TwinStick/AI/SpawnersController.h>
+
+int ATwinStickNPC::count = 0;
 
 ATwinStickNPC::ATwinStickNPC()
 {
@@ -49,6 +52,8 @@ void ATwinStickNPC::BeginPlay()
 		GM->IncreaseNPCs();
 	}
 
+	count++;
+
 }
 
 void ATwinStickNPC::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -61,6 +66,7 @@ void ATwinStickNPC::EndPlay(EEndPlayReason::Type EndPlayReason)
 
 void ATwinStickNPC::Destroyed()
 {
+	count--;
 	// decrease the NPC counter so we can cap spawning if necessary
 	if (ATwinStickGameMode* GM = Cast<ATwinStickGameMode>(GetWorld()->GetAuthGameMode()))
 	{
@@ -98,6 +104,7 @@ void ATwinStickNPC::Destroyed()
 		UE_LOG(LogTemp, Warning, TEXT("Spawn Sucesfull"));
 	}
 
+
 	Super::Destroyed();
 }
 
@@ -107,12 +114,17 @@ void ATwinStickNPC::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, 
 	if (ATwinStickCharacter* PlayerCharacter = Cast<ATwinStickCharacter>(Other))
 	{
 		// apply damage to the character
-		PlayerCharacter->HandleDamage(1.0f, GetActorForwardVector());
+		PlayerCharacter->HandleDamage(1.0f * ASpawnersController::Instance->EnemyDamageMultyplayer, GetActorForwardVector());
 	}
 }
 
-void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector)
+void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector, float damage)
 {
+	healse -= damage / ASpawnersController::Instance->EnemyHPMultyplayer;
+	if (healse > 0) return; // если здоровье больше 0, не уничтожаем NPC
+
+
+
 	// only handle damage if we haven't been hit yet
 	if (bHit)
 	{

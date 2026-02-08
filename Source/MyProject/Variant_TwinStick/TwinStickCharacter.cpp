@@ -266,6 +266,7 @@ void ATwinStickCharacter::DoShoot()
 	ProjectileTransform.SetLocation(ProjectileLocation);
 
 	ATwinStickProjectile* Projectile = GetWorld()->SpawnActor<ATwinStickProjectile>(ProjectileClass, ProjectileTransform);
+	Projectile->damage = 1;
 }
 
 void ATwinStickCharacter::DoAoEAttack()
@@ -296,17 +297,17 @@ void ATwinStickCharacter::DoAoEAttack()
 
 void ATwinStickCharacter::HandleDamage(float Damage, const FVector& DamageDirection)
 {
-	if (ArmorComp->CurrentValue > 0) 
+	if (ArmorComp->CurrentValue > 0)
 	{
 		ArmorComp->ApplyDamage(1.f);
 	}
-	else 
+	else
 	{
-		if (HealthComp->CurrentValue > Damage) 
+		if (HealthComp->CurrentValue > Damage)
 		{
 			HealthComp->ApplyDamage(Damage);
 		}
-		else 
+		else
 		{
 			Death();
 		}
