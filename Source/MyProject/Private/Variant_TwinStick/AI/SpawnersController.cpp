@@ -33,7 +33,7 @@ void ASpawnersController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UE_LOG(LogTemp, Warning, TEXT("ATwinStickNPC::count: %d"), ATwinStickNPC::count);
+	//UE_LOG(LogTemp, Warning, TEXT("ATwinStickNPC::count: %d"), ATwinStickNPC::count);
 	if(ATwinStickNPC::count == 0)    // Add this include at the top of the file
 	{
 		for (int i = 0; i < Spawners.Num(); i++)
