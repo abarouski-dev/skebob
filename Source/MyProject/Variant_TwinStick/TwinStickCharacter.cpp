@@ -96,7 +96,7 @@ void ATwinStickCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//UE_LOG(LogTemp, Warning, TEXT("%f"), Health);
-
+	StaminaComp->Restore(DeltaTime* StaminaRegen);
 	// get the current rotation
 	const FRotator OldRotation = GetActorRotation();
 
@@ -184,6 +184,9 @@ void ATwinStickCharacter::MouseAim(const FInputActionValue& Value)
 void ATwinStickCharacter::Dash(const FInputActionValue& Value)
 {
 	// route the input
+	if (StaminaComp->CurrentValue < DashStaminaCost) return;
+
+	StaminaComp->Consume(DashStaminaCost);
 	DoDash();
 }
 

@@ -126,6 +126,10 @@ protected:
 	/** Speed to blend between our current rotation and the target aim rotation when stick aiming */
 	UPROPERTY(EditAnywhere, Category="Aim", meta = (ClampMin = 0, ClampMax = 100, Units = "s"))
 	float AimRotationInterpSpeed = 10.0f;
+	UPROPERTY(EditAnywhere, Category="Stamina", meta = (ClampMin = 0, ClampMax = 100, Units = "s"))
+	float DashStaminaCost = 25.f;
+	UPROPERTY(EditAnywhere, Category="Stamina", meta = (ClampMin = 0, ClampMax = 100, Units = "s"))
+	float StaminaRegen = 5.f;
 
 	/** Game time of the last AoE attack */
 	float LastAoETime = 0.0f;
