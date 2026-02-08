@@ -57,7 +57,7 @@ void ATwinStickSpawner::EndPlay(EEndPlayReason::Type EndPlayReason)
 void ATwinStickSpawner::SpawnNPCGroup()
 {
 	if (SpawnCount == 0) return;
-	UE_LOG(LogTemp, Warning, TEXT("hueta"));
+	//UE_LOG(LogTemp, Warning, TEXT("hueta"));
 	// reset the group spawn counter
 	SpawnCount = 0;
 
