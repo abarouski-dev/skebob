@@ -26,15 +26,17 @@ void ASpawnersController::BeginPlay()
 
 	if (UPlayerHUDWidget::Instance != nullptr) UPlayerHUDWidget::Instance->SetWaweValue(FText::FromString(FString::FromInt(waweNumber)));
 
-    ATwinStickNPC::count = 0;
+    //ATwinStickNPC::count = 0;
+
+	ATwinStickNPC::NPCs.Empty();
 }
 
 void ASpawnersController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//UE_LOG(LogTemp, Warning, TEXT("ATwinStickNPC::count: %d"), ATwinStickNPC::count);
-	if(ATwinStickNPC::count == 0)    // Add this include at the top of the file
+	//UE_LOG(LogTemp, Warning, TEXT("ATwinStickNPC::count: %d"), ATwinStickNPC::NPCs.Num());
+	if(ATwinStickNPC::NPCs.Num() == 0)
 	{
 		for (int i = 0; i < Spawners.Num(); i++)
 		{

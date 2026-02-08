@@ -13,7 +13,7 @@
 #include "TimerManager.h"
 #include <Variant_TwinStick/AI/SpawnersController.h>
 
-int ATwinStickNPC::count = 0;
+TArray<ATwinStickNPC*> ATwinStickNPC::NPCs = TArray<ATwinStickNPC*>();
 
 ATwinStickNPC::ATwinStickNPC()
 {
@@ -40,6 +40,7 @@ ATwinStickNPC::ATwinStickNPC()
 	GetCharacterMovement()->AvoidanceWeight = 1.0f;
 	GetCharacterMovement()->bConstrainToPlane = true;
 	GetCharacterMovement()->bSnapToPlaneAtStart = true;
+
 }
 
 void ATwinStickNPC::BeginPlay()
@@ -52,8 +53,8 @@ void ATwinStickNPC::BeginPlay()
 		GM->IncreaseNPCs();
 	}
 
-	count++;
-
+	//count++;
+	NPCs.Add(this);
 }
 
 void ATwinStickNPC::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -66,7 +67,8 @@ void ATwinStickNPC::EndPlay(EEndPlayReason::Type EndPlayReason)
 
 void ATwinStickNPC::Destroyed()
 {
-	count--;
+	NPCs.Remove(this);
+	//count--;
 	// decrease the NPC counter so we can cap spawning if necessary
 	if (ATwinStickGameMode* GM = Cast<ATwinStickGameMode>(GetWorld()->GetAuthGameMode()))
 	{

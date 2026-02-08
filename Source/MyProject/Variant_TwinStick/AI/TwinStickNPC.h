@@ -50,7 +50,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="NPC")
 	bool bHit = false;
 
-	static int count;
+	//static int count;
+
+	static TArray<ATwinStickNPC*> NPCs;
 
 	UPROPERTY(EditAnywhere, Category = "NPC")
 	float healse = 3;

@@ -80,10 +80,9 @@ void UPlayerHUDWidget::OnArmorChanged(float Current, float Max)
 
 void UPlayerHUDWidget::SetWaweValue(const FText& NewText)
 {
-    UE_LOG(LogTemp, Warning, TEXT("ATwinStickNPC::count:"));
     if (waweNum != nullptr)
     {
-        UE_LOG(LogTemp, Warning, TEXT("if "));
-        waweNum->SetText(NewText);
+        FText FinalText = FText::Format(FText::FromString("Wave: {0}"), NewText);
+        waweNum->SetText(FinalText);
     }
 }
