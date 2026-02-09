@@ -1,6 +1,8 @@
 #include "Weapon/BaseWeapon.h"
 #include "TwinStickCharacter.h"
 #include "TimerManager.h"
+#include "Kismet/GameplayStatics.h"
+#include "Components/AudioComponent.h"
 
 ABaseWeapon::ABaseWeapon()
 {
@@ -22,12 +24,22 @@ void ABaseWeapon::StartFire()
     Fire();
 
     GetWorldTimerManager().SetTimer(TimerHandle_HandleFiring, this, &ABaseWeapon::Fire, TimeBetweenShots, true);
+
+    if (WeaponType == EWeaponType::Flamethrower)
+    {
+        PlayFlamethrowerLoop(true);
+    }
 }
 
 void ABaseWeapon::StopFire()
 {
     GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
     EndParticle();
+
+    if (WeaponType == EWeaponType::Flamethrower)
+    {
+        PlayFlamethrowerLoop(false);
+    }
 }
 
 void ABaseWeapon::Fire()
@@ -74,4 +86,26 @@ void ABaseWeapon::ResetReloadState()
 
     bIsReloading = false;
     CurrentAmmo = MaxAmmo;
+}
+
+void ABaseWeapon::PlayFlamethrowerLoop(bool bStart)
+{
+    if (bStart)
+    {
+        if (ContinuousFireSound && !FireAudioComp)
+        {
+            FireAudioComp = UGameplayStatics::SpawnSoundAttached(ContinuousFireSound, RootComponent);
+        }
+        else if (FireAudioComp)
+        {
+            FireAudioComp->Play();
+        }
+    }
+    else
+    {
+        if (FireAudioComp)
+        {
+            FireAudioComp->Stop();
+        }
+    }
 }

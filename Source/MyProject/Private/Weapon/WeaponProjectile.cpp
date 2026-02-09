@@ -4,6 +4,7 @@
 #include "Weapon/WeaponProjectile.h"
 #include "TwinStickProjectile.h"
 #include "TwinStickCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 void AWeaponProjectile::Fire()
 {
@@ -39,6 +40,12 @@ void AWeaponProjectile::Fire()
         {
             Projectile->damage = BaseDamage * MyOwner->GetWeaponDamageModifier();
         }
+
+        if (FireSound)
+        {
+            UGameplayStatics::PlaySoundAtLocation(this, FireSound, GetActorLocation());
+        }
+
         FireParticles();
     }
 }
