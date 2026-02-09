@@ -122,7 +122,12 @@ void ATwinStickNPC::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, 
 
 void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector, float damage)
 {
-	healse -= damage / ASpawnersController::Instance->EnemyHPMultyplayer;
+	float SafeMultiplier = 1.0f;
+	if (ASpawnersController::Instance != nullptr && ASpawnersController::Instance->EnemyHPMultyplayer > 0.0f)
+	{
+		SafeMultiplier = ASpawnersController::Instance->EnemyHPMultyplayer;
+	}
+	healse -= damage / SafeMultiplier;
 	if (healse > 0) return; // если здоровье больше 0, не уничтожаем NPC
 
 
@@ -148,7 +153,7 @@ void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector, float damage)
 	// randomly spawn a pickup
 	if (FMath::RandRange(0, 100) < PickupSpawnChance)
 	{
-		ATwinStickPickup* Pickup = GetWorld()->SpawnActor<ATwinStickPickup>(PickupClass[FMath::Rand() % PickupClass.Num()], GetActorTransform());
+		AActor* Pickup = GetWorld()->SpawnActor<AActor>(PickupClass[FMath::Rand() % PickupClass.Num()], GetActorTransform());
 	}
 	
 	// spawn the NPC destruction proxy
