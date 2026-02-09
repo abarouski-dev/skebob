@@ -86,6 +86,8 @@ void ATwinStickCharacter::BeginPlay()
 
 		PlayerController->bShowMouseCursor = bUsingMouse;
 	}
+
+	if (UPlayerHUDWidget::Instance != nullptr) UPlayerHUDWidget::Instance->SetHolyBombs(FText::FromString(FString::FromInt(Items)));
 }
 
 void ATwinStickCharacter::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -124,6 +126,17 @@ void ATwinStickCharacter::NotifyControllerChanged()
 void ATwinStickCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	SurvivalTime += DeltaTime;
+
+	FTimespan TimeStruct = FTimespan::FromSeconds(SurvivalTime);
+
+	FString TimeString = FString::Printf(TEXT("%02d:%02d"), TimeStruct.GetMinutes(), TimeStruct.GetSeconds());
+
+	if (UPlayerHUDWidget::Instance != nullptr)
+	{
+		UPlayerHUDWidget::Instance->SetTimeValue(FText::FromString(TimeString));
+	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("%f"), Health);
 	StaminaComp->Restore(DeltaTime* StaminaRegen);
@@ -337,6 +350,8 @@ void ATwinStickCharacter::DoAoEAttack()
 
 			// update the items count
 			UpdateItems();
+
+			if (UPlayerHUDWidget::Instance != nullptr) UPlayerHUDWidget::Instance->SetHolyBombs(FText::FromString(FString::FromInt(Items)));
 		}
 	}
 }
@@ -407,6 +422,8 @@ void ATwinStickCharacter::AddPickup()
 
 	// update the items counter
 	UpdateItems();
+
+	if (UPlayerHUDWidget::Instance != nullptr) UPlayerHUDWidget::Instance->SetHolyBombs(FText::FromString(FString::FromInt(Items)));
 }
 
 void ATwinStickCharacter::UpdateItems()

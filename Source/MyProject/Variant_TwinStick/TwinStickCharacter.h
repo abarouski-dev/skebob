@@ -274,6 +274,8 @@ public:
 
 	void AddWeapon(EWeaponType Type, TSubclassOf<ABaseWeapon> WeaponClass);
 
+	float SurvivalTime = 0.0f;
+
 protected:
 
 	UPROPERTY()
