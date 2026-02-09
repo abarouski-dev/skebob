@@ -21,6 +21,8 @@
 #include <Variant_TwinStick/AI/SpawnersController.h>
 #include <Kismet/GameplayStatics.h>
 
+bool ATwinStickCharacter::IsPressed = false;
+
 ATwinStickCharacter::ATwinStickCharacter()
 {
  	PrimaryActorTick.bCanEverTick = true;
@@ -458,11 +460,13 @@ void ATwinStickCharacter::ResetAutoFire()
 void ATwinStickCharacter::OnFirePressed()
 {
 	if (CurrentWeapon) CurrentWeapon->StartFire();
+	IsPressed = true;
 }
 
 void ATwinStickCharacter::OnFireReleased()
 {
 	if (CurrentWeapon) CurrentWeapon->StopFire();
+	IsPressed = false;
 	UE_LOG(LogTemp, Warning, TEXT("StopFire called. Clearing firing timer."));
 }
 
@@ -499,6 +503,8 @@ void ATwinStickCharacter::AddWeapon(EWeaponType Type, TSubclassOf<ABaseWeapon> W
 			CurrentWeapon->MyOwner = this;
 			CurrentWeapon->WeaponType = Type;
 			EquippedWeapons.Add(Type, CurrentWeapon);
+			OnFireReleased();
+			CurrentWeapon->ResetReloadState();
 		}
 	}
 

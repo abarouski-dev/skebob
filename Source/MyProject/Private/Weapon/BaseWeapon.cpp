@@ -73,6 +73,11 @@ void ABaseWeapon::FinishReload()
     CurrentAmmo = MaxAmmo;
     bIsReloading = false;
 
+    if (ATwinStickCharacter::IsPressed) 
+    {
+        StartFire();
+    }
+
     UE_LOG(LogTemp, Warning, TEXT("Reload Finished! Ammo: %d"), CurrentAmmo);
 }
 

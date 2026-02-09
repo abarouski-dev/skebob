@@ -282,6 +282,8 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Audio")
 	USoundBase* DeathSound;
 
+	static bool IsPressed;
+
 protected:
 
 	UPROPERTY()
