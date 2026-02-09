@@ -32,6 +32,15 @@ public:
     UPROPERTY(meta = (BindWidget))
     UTextBlock* waweNum;
 
+    UPROPERTY(meta = (BindWidget))
+    UTextBlock* Score;
+
+    UPROPERTY(meta = (BindWidget))
+    class UTextBlock* timeText;
+
+    UPROPERTY(meta = (BindWidget))
+    class UTextBlock* holyBombs;
+
     // Call this after widget creation
     UFUNCTION(BlueprintCallable)
     void BindToAttributes(ACharacter* Character);
@@ -66,4 +75,13 @@ public:
 
     UFUNCTION(BlueprintCallable)
     void SetWaweValue(const FText& NewText);
+
+    UFUNCTION(BlueprintCallable)
+    void OnScoreChanged(const FText& NewText);
+
+    UFUNCTION(BlueprintCallable)
+    void SetTimeValue(const FText& NewText);
+
+    UFUNCTION(BlueprintCallable)
+    void SetHolyBombs(const FText& NewText);
 };

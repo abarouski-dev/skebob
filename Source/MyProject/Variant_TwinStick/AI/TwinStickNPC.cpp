@@ -88,13 +88,10 @@ void ATwinStickNPC::Destroyed()
 		return;
 	}
 
-	// 2. �������� ��������� ������ �� �������
 	int32 RandomIndex = FMath::RandRange(0, ActorsToSpawnClass.Num() - 1);
 
-	// 3. �������� ��������� �����
 	TSubclassOf<AActor> ClassToSpawn = ActorsToSpawnClass[RandomIndex];
 
-	// 4. ���������, ��� ����� ������� ����� �������
 	if (ClassToSpawn != nullptr)
 	{
 		FActorSpawnParameters SpawnParams;
@@ -128,7 +125,7 @@ void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector, float damage)
 		SafeMultiplier = ASpawnersController::Instance->EnemyHPMultyplayer;
 	}
 	healse -= damage / SafeMultiplier;
-	if (healse > 0) return; // ���� �������� ������ 0, �� ���������� NPC
+	if (healse > 0) return;
 
 
 
