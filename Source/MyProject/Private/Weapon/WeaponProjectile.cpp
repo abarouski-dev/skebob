@@ -28,8 +28,11 @@ void AWeaponProjectile::Fire()
 
         ProjectileTransform.SetScale3D(FVector(1.0f, 1.0f, 1.0f));
 
+        ProjectileTransform.SetRotation(MyOwner->GetActorRotation().Quaternion());
+
         FVector ProjectileLocation = ProjectileTransform.GetLocation() + ProjectileTransform.GetRotation().RotateVector(FVector::ForwardVector * MuzzleOffset);
         ProjectileTransform.SetLocation(ProjectileLocation);
+
         ATwinStickProjectile* Projectile = GetWorld()->SpawnActor<ATwinStickProjectile>(ProjectileClass, ProjectileTransform);
 
         if (Projectile)

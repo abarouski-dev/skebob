@@ -36,6 +36,7 @@ void ABaseWeapon::Fire()
         Reload();
         return;
     }
+    
 
     CurrentAmmo--;
 }
