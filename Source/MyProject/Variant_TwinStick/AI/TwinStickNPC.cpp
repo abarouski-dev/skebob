@@ -17,7 +17,7 @@ TArray<ATwinStickNPC*> ATwinStickNPC::NPCs = TArray<ATwinStickNPC*>();
 
 ATwinStickNPC::ATwinStickNPC()
 {
-	PrimaryActorTick.bCanEverTick = true; // <- 16 строка
+	PrimaryActorTick.bCanEverTick = true; // <- 16 пїЅпїЅпїЅпїЅпїЅпїЅ
 
 	// ensure we spawn an AI controller when we're spawned
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -88,20 +88,20 @@ void ATwinStickNPC::Destroyed()
 		return;
 	}
 
-	// 2. Выбираем случайный индекс из массива
+	// 2. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	int32 RandomIndex = FMath::RandRange(0, ActorsToSpawnClass.Num() - 1);
 
-	// 3. Получаем выбранный класс
+	// 3. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	TSubclassOf<AActor> ClassToSpawn = ActorsToSpawnClass[RandomIndex];
 
-	// 4. Проверяем, что класс валиден перед спавном
+	// 4. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if (ClassToSpawn != nullptr)
 	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = GetInstigator();
 
-		// Спавн выбранного актера
+		// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		AActor* SpawnedActor = World->SpawnActor<AActor>(ClassToSpawn, GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
 		UE_LOG(LogTemp, Warning, TEXT("Spawn Sucesfull"));
 	}
@@ -128,7 +128,7 @@ void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector, float damage)
 		SafeMultiplier = ASpawnersController::Instance->EnemyHPMultyplayer;
 	}
 	healse -= damage / SafeMultiplier;
-	if (healse > 0) return; // если здоровье больше 0, не уничтожаем NPC
+	if (healse > 0) return; // пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 0, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ NPC
 
 
 

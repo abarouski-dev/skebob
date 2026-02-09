@@ -35,7 +35,7 @@ void ASpawnersController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	UE_LOG(LogTemp, Warning, TEXT("ATwinStickNPC::count: %d"), ATwinStickNPC::NPCs.Num());
+	//UE_LOG(LogTemp, Warning, TEXT("ATwinStickNPC::count: %d"), ATwinStickNPC::NPCs.Num());
 	if(ATwinStickNPC::NPCs.Num() == 0)
 	{
 		for (int i = 0; i < Spawners.Num(); i++)
