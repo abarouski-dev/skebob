@@ -18,6 +18,7 @@
 #include "Stats/ArmorComponent.h"
 #include "UI/PlayerHUDWidget.h"
 #include "EnhancedInputSubsystems.h"
+#include <Kismet/GameplayStatics.h>
 
 ATwinStickCharacter::ATwinStickCharacter()
 {
@@ -382,12 +383,23 @@ void ATwinStickCharacter::UpdateHealth()
 	//	Death();
 	//}
 }
-
+/*
 void ATwinStickCharacter::Death()
 {
-	Destroy();
-}
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		UGameplayStatics::SetGamePaused(World, true);
+		if (PC)
+		{
+			PC->SetPause(true);
+		}
+	}
 
+
+}
+*/
 void ATwinStickCharacter::AddPickup()
 {
 	// increase the item count

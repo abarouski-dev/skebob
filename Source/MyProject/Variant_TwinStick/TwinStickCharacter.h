@@ -206,6 +206,7 @@ protected:
 
 	void UpdateHealth();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Health HP")
 	void Death();
 
 public:
