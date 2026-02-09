@@ -17,6 +17,7 @@
 #include "Stats/StaminaComponent.h"
 #include "Stats/ArmorComponent.h"
 #include "UI/PlayerHUDWidget.h"
+#include "EnhancedInputSubsystems.h"
 
 ATwinStickCharacter::ATwinStickCharacter()
 {
@@ -73,6 +74,17 @@ void ATwinStickCharacter::BeginPlay()
 			HUDWidget->BindToAttributes(this);
 		}
 	}
+
+	if (PlayerController)
+	{
+		FInputModeGameAndUI InputMode;
+		InputMode.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		InputMode.SetHideCursorDuringCapture(false);
+
+		PlayerController->SetInputMode(InputMode);
+
+		PlayerController->bShowMouseCursor = bUsingMouse;
+	}
 }
 
 void ATwinStickCharacter::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -87,16 +99,33 @@ void ATwinStickCharacter::NotifyControllerChanged()
 {
 	Super::NotifyControllerChanged();
 
-	// set the player controller reference
 	PlayerController = Cast<APlayerController>(GetController());
+
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			if (InputMappingContext)
+			{
+				Subsystem->RemoveMappingContext(InputMappingContext);
+				Subsystem->AddMappingContext(InputMappingContext, 0);
+				UE_LOG(LogTemp, Warning, TEXT("SUCCESS: Mapping Context Added!"));
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("FAIL: InputMappingContext is NULL in Blueprint!"));
+			}
+		}
+	}
 }
+
 
 void ATwinStickCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	//UE_LOG(LogTemp, Warning, TEXT("%f"), Health);
-
+	StaminaComp->Restore(DeltaTime* StaminaRegen);
 	// get the current rotation
 	const FRotator OldRotation = GetActorRotation();
 
@@ -130,6 +159,15 @@ void ATwinStickCharacter::Tick(float DeltaTime)
 
 		SetActorRotation(TargetRot);
 	}
+
+	if (CurrentWeapon)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Ammo: %d"), CurrentWeapon->CurrentAmmo);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("No weapon equipped!"));
+	}
 }
 
 void ATwinStickCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -144,7 +182,11 @@ void ATwinStickCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInput
 		EnhancedInputComponent->BindAction(StickAimAction, ETriggerEvent::Triggered, this, &ATwinStickCharacter::StickAim);
 		EnhancedInputComponent->BindAction(MouseAimAction, ETriggerEvent::Triggered, this, &ATwinStickCharacter::MouseAim);
 		EnhancedInputComponent->BindAction(DashAction, ETriggerEvent::Triggered, this, &ATwinStickCharacter::Dash);
-		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ATwinStickCharacter::Shoot);
+		//EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Triggered, this, &ATwinStickCharacter::Shoot);
+
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Started, this, &ATwinStickCharacter::OnFirePressed);
+		EnhancedInputComponent->BindAction(ShootAction, ETriggerEvent::Completed, this, &ATwinStickCharacter::OnFireReleased);
+		
 		EnhancedInputComponent->BindAction(AoEAction, ETriggerEvent::Triggered, this, &ATwinStickCharacter::AoEAttack);
 
 	}
@@ -184,6 +226,9 @@ void ATwinStickCharacter::MouseAim(const FInputActionValue& Value)
 void ATwinStickCharacter::Dash(const FInputActionValue& Value)
 {
 	// route the input
+	if (StaminaComp->CurrentValue < DashStaminaCost) return;
+
+	StaminaComp->Consume(DashStaminaCost);
 	DoDash();
 }
 
@@ -365,5 +410,84 @@ void ATwinStickCharacter::ResetAutoFire()
 {
 	// reset the autofire flag
 	bAutoFireActive = false;
+}
+
+void ATwinStickCharacter::OnFirePressed()
+{
+	if (CurrentWeapon) CurrentWeapon->StartFire();
+}
+
+void ATwinStickCharacter::OnFireReleased()
+{
+	if (CurrentWeapon) CurrentWeapon->StopFire();
+	UE_LOG(LogTemp, Warning, TEXT("StopFire called. Clearing firing timer."));
+}
+
+void ATwinStickCharacter::AddWeapon(EWeaponType Type, TSubclassOf<ABaseWeapon> WeaponClass)
+{
+	if (!WeaponClass) return;
+
+	if (CurrentWeapon)
+	{
+		CurrentWeapon->StopFire();
+		GetWorldTimerManager().ClearAllTimersForObject(CurrentWeapon);
+
+		CurrentWeapon->SetActorHiddenInGame(true);
+		CurrentWeapon->SetActorTickEnabled(false);
+	}
+
+	if (EquippedWeapons.Contains(Type))
+	{
+		CurrentWeapon = EquippedWeapons[Type];
+		CurrentWeapon->SetActorHiddenInGame(false);
+		CurrentWeapon->SetActorTickEnabled(true);
+
+		CurrentWeapon->ResetReloadState();
+	}
+	else
+	{
+		FActorSpawnParameters Params;
+		Params.Owner = this;
+		CurrentWeapon = GetWorld()->SpawnActor<ABaseWeapon>(WeaponClass, Params);
+
+		if (CurrentWeapon)
+		{
+			CurrentWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, CurrentWeapon->WeaponSocketName);
+			CurrentWeapon->MyOwner = this;
+			CurrentWeapon->WeaponType = Type;
+			EquippedWeapons.Add(Type, CurrentWeapon);
+		}
+	}
+
+}
+
+void ATwinStickCharacter::UpgradeWeaponGlobal()
+{
+	GlobalWeaponLevel++;
+}
+
+void ATwinStickCharacter::UpgradeArmor()
+{
+	ArmorComp->Apply(1);
+}
+
+void ATwinStickCharacter::UpgradeHP()
+{
+	HealthComp->ApplyDamage(-30);
+}
+
+void ATwinStickCharacter::UpgradeMaxHP()
+{
+	HealthComp->SetMaxValue(HealthComp->MaxValue + 10);
+}
+
+void ATwinStickCharacter::UpgradeMaxSP()
+{
+	StaminaComp->SetMaxValue(StaminaComp->MaxValue + 10);
+}
+
+void ATwinStickCharacter::UpgradeRegenSP()
+{
+	StaminaRegen += 1.0f;
 }
 

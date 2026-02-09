@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/PlayerController.h"
+#include "Weapon/BaseWeapon.h"
+#include "InputMappingContext.h"
 #include "TwinStickCharacter.generated.h"
 
 class USpringArmComponent;
@@ -51,6 +53,8 @@ protected:
 	//UPROPERTY(BlueprintAssignable, Category = "Health HP")
 	//FOnHealthChanged OnHealthChanged;
 
+	UPROPERTY(EditAnywhere, Category = "Input")
+	class UInputMappingContext* InputMappingContext;
 
 	UPROPERTY(VisibleAnywhere)
 	UHealthComponent* HealthComp;
@@ -126,6 +130,10 @@ protected:
 	/** Speed to blend between our current rotation and the target aim rotation when stick aiming */
 	UPROPERTY(EditAnywhere, Category="Aim", meta = (ClampMin = 0, ClampMax = 100, Units = "s"))
 	float AimRotationInterpSpeed = 10.0f;
+	UPROPERTY(EditAnywhere, Category="Stamina", meta = (ClampMin = 0, ClampMax = 100, Units = "s"))
+	float DashStaminaCost = 25.f;
+	UPROPERTY(EditAnywhere, Category="Stamina", meta = (ClampMin = 0, ClampMax = 100, Units = "s"))
+	float StaminaRegen = 5.f;
 
 	/** Game time of the last AoE attack */
 	float LastAoETime = 0.0f;
@@ -238,7 +246,47 @@ public:
 	/** Gives the player a pickup item */
 	void AddPickup();
 
+	UPROPERTY()
+	int32 GlobalWeaponLevel = 0;
+
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
+	void UpgradeWeaponGlobal();
+	
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
+	void UpgradeArmor();
+	
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
+	void UpgradeHP();
+	
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
+	void UpgradeMaxHP();
+	
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
+	void UpgradeMaxSP();
+	UFUNCTION(BlueprintCallable, Category = "Upgrade")
+	void UpgradeRegenSP();
+
+	float GetWeaponDamageModifier()
+	{
+		return 1.0f + (GlobalWeaponLevel * 0.2f);
+	}
+
+	void AddWeapon(EWeaponType Type, TSubclassOf<ABaseWeapon> WeaponClass);
+
 protected:
+
+	UPROPERTY()
+	TMap<EWeaponType, int32> WeaponUpgrades;
+
+	UPROPERTY()
+	TMap<EWeaponType, ABaseWeapon*> EquippedWeapons;
+
+	UPROPERTY()
+	ABaseWeapon* CurrentWeapon;
+
+	// ¬вод
+	void OnFirePressed();
+	void OnFireReleased();
 
 	/** Updates the items counter on the Game Mode */
 	void UpdateItems();

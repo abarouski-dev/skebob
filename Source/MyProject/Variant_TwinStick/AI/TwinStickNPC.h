@@ -31,7 +31,7 @@ protected:
 
 	/** Type of pickup to spawn on death */
 	UPROPERTY(EditAnywhere, Category="Pickup")
-	TSubclassOf<ATwinStickPickup> PickupClass;
+	TArray<TSubclassOf<AActor>> PickupClass;
 
 	/** Type of destruction proxy to spawn on death */
 	UPROPERTY(EditAnywhere, Category="Destruction")
@@ -50,7 +50,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="NPC")
 	bool bHit = false;
 
-	static int count;
+	//static int count;
+
+	static TArray<ATwinStickNPC*> NPCs;
 
 	UPROPERTY(EditAnywhere, Category = "NPC")
 	float healse = 3;
