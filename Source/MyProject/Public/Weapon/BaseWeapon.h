@@ -64,6 +64,8 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Effects")
 	void FireParticles();
+    UFUNCTION(BlueprintImplementableEvent)
+    void EndParticle();
     void Reload();
     void FinishReload();
 };

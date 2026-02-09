@@ -53,4 +53,5 @@ void AWeaponFlamethrower::Fire()
             }
         }
     }
+    FireParticles();
 }
