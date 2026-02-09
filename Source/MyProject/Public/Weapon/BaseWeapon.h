@@ -61,6 +61,9 @@ protected:
     virtual void BeginPlay() override;
 
     virtual void Fire();
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "Effects")
+	void FireParticles();
     void Reload();
     void FinishReload();
 };

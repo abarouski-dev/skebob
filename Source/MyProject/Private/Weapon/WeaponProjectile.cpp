@@ -39,5 +39,6 @@ void AWeaponProjectile::Fire()
         {
             Projectile->damage = BaseDamage * MyOwner->GetWeaponDamageModifier();
         }
+        FireParticles();
     }
 }

@@ -37,7 +37,7 @@ void ABaseWeapon::Fire()
         return;
     }
     
-
+    FireParticles();
     CurrentAmmo--;
 }
 
