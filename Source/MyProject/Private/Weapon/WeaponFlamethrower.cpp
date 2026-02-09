@@ -5,7 +5,6 @@
 #include "TwinStickCharacter.h"
 #include "TwinStickNPC.h"
 #include "Engine/OverlapResult.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 void AWeaponFlamethrower::Fire()
 {
@@ -38,8 +37,7 @@ void AWeaponFlamethrower::Fire()
         Params
     );
 
-    // Можно раскомментировать для визуализации зоны в редакторе
-    DrawDebugBox(GetWorld(), BoxCenter, HalfSize, GetActorQuat(), FColor::Red, false, 0.1f);
+    //DrawDebugBox(GetWorld(), BoxCenter, HalfSize, GetActorQuat(), FColor::Red, false, 0.1f);
 
     if (bHit)
     {
@@ -53,4 +51,5 @@ void AWeaponFlamethrower::Fire()
             }
         }
     }
+    FireParticles();
 }

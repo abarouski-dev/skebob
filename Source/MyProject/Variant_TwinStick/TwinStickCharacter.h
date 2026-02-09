@@ -206,7 +206,8 @@ protected:
 
 	void UpdateHealth();
 
-	void Death();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Health HP")
+	void Death(const FText& t);
 
 public:
 
@@ -272,6 +273,14 @@ public:
 	}
 
 	void AddWeapon(EWeaponType Type, TSubclassOf<ABaseWeapon> WeaponClass);
+
+	float SurvivalTime = 0.0f;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* DamageSound;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* DeathSound;
 
 protected:
 

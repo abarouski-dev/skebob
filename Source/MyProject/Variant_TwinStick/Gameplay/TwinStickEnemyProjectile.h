@@ -40,5 +40,6 @@ protected:
 	/** Handles collisions that stop this projectile from moving */
 	UFUNCTION()
 	void OnProjectileStop(const FHitResult& ImpactResult);
-
+	UFUNCTION(BlueprintImplementableEvent)
+	void CreateBlood();
 };

@@ -38,7 +38,9 @@ void UPlayerHUDWidget::BindToAttributes(ACharacter* Character)
     if(Instance == nullptr)
     {
         Instance = this;
-    }SetWaweValue(FText::FromString("1"));
+    }
+    SetWaweValue(FText::FromString("1"));
+	OnScoreChanged(FText::FromString("0"));
 }
 
 void UPlayerHUDWidget::NativeDestruct()
@@ -77,6 +79,14 @@ void UPlayerHUDWidget::OnArmorChanged(float Current, float Max)
     }
 }
 
+void UPlayerHUDWidget::OnScoreChanged(const FText& NewText)
+{
+    if (Score != nullptr)
+    {
+        FText FinalText = FText::Format(FText::FromString("Score: {0}"), NewText);
+        Score->SetText(FinalText);
+    }
+}
 
 void UPlayerHUDWidget::SetWaweValue(const FText& NewText)
 {
@@ -84,5 +94,23 @@ void UPlayerHUDWidget::SetWaweValue(const FText& NewText)
     {
         FText FinalText = FText::Format(FText::FromString("Wave: {0}"), NewText);
         waweNum->SetText(FinalText);
+    }
+}
+
+void UPlayerHUDWidget::SetTimeValue(const FText& NewText)
+{
+    if (timeText != nullptr)
+    {
+        FText FinalText = FText::Format(FText::FromString("Time: {0}"), NewText);
+        timeText->SetText(FinalText);
+    }
+}
+
+void UPlayerHUDWidget::SetHolyBombs(const FText& NewText)
+{
+    if (holyBombs != nullptr)
+    {
+        FText FinalText = FText::Format(FText::FromString("Holy Bombs: {0}"), NewText);
+        holyBombs->SetText(FinalText);
     }
 }

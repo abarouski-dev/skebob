@@ -44,4 +44,7 @@ protected:
 	UFUNCTION()
 	void OnProjectileStop(const FHitResult& ImpactResult);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void CreateBlood();
+
 };

@@ -12,12 +12,13 @@
 #include "TwinStickNPCDestruction.h"
 #include "TimerManager.h"
 #include <Variant_TwinStick/AI/SpawnersController.h>
+#include "Kismet/GameplayStatics.h"
 
 TArray<ATwinStickNPC*> ATwinStickNPC::NPCs = TArray<ATwinStickNPC*>();
 
 ATwinStickNPC::ATwinStickNPC()
 {
-	PrimaryActorTick.bCanEverTick = true; // <- 16 строка
+	PrimaryActorTick.bCanEverTick = true; // <- 16 пїЅпїЅпїЅпїЅпїЅпїЅ
 
 	// ensure we spawn an AI controller when we're spawned
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
@@ -88,20 +89,16 @@ void ATwinStickNPC::Destroyed()
 		return;
 	}
 
-	// 2. Выбираем случайный индекс из массива
 	int32 RandomIndex = FMath::RandRange(0, ActorsToSpawnClass.Num() - 1);
 
-	// 3. Получаем выбранный класс
 	TSubclassOf<AActor> ClassToSpawn = ActorsToSpawnClass[RandomIndex];
 
-	// 4. Проверяем, что класс валиден перед спавном
 	if (ClassToSpawn != nullptr)
 	{
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = GetInstigator();
 
-		// Спавн выбранного актера
 		AActor* SpawnedActor = World->SpawnActor<AActor>(ClassToSpawn, GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
 		UE_LOG(LogTemp, Warning, TEXT("Spawn Sucesfull"));
 	}
@@ -112,20 +109,28 @@ void ATwinStickNPC::Destroyed()
 
 void ATwinStickNPC::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// have we collided against the player?
 	if (ATwinStickCharacter* PlayerCharacter = Cast<ATwinStickCharacter>(Other))
 	{
-		// apply damage to the character
+		if (HitPlayerSound) UGameplayStatics::PlaySoundAtLocation(this, HitPlayerSound, GetActorLocation());
 		PlayerCharacter->HandleDamage(1.0f * ASpawnersController::Instance->EnemyDamageMultyplayer, GetActorForwardVector());
 	}
 }
 
 void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector, float damage)
 {
-	healse -= damage / ASpawnersController::Instance->EnemyHPMultyplayer;
-	if (healse > 0) return; // если здоровье больше 0, не уничтожаем NPC
+	float SafeMultiplier = 1.0f;
+	if (ASpawnersController::Instance != nullptr && ASpawnersController::Instance->EnemyHPMultyplayer > 0.0f)
+	{
+		SafeMultiplier = ASpawnersController::Instance->EnemyHPMultyplayer;
+	}
+	healse -= damage / SafeMultiplier;
+	if (healse > 0) 
+	{
+		if (TakeDamageSound) UGameplayStatics::PlaySoundAtLocation(this, TakeDamageSound, GetActorLocation());
+		return;
+	}
 
-
+	if (!bHit && DeathSound) UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
 
 	// only handle damage if we haven't been hit yet
 	if (bHit)
@@ -148,7 +153,7 @@ void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector, float damage)
 	// randomly spawn a pickup
 	if (FMath::RandRange(0, 100) < PickupSpawnChance)
 	{
-		ATwinStickPickup* Pickup = GetWorld()->SpawnActor<ATwinStickPickup>(PickupClass[FMath::Rand() % PickupClass.Num()], GetActorTransform());
+		AActor* Pickup = GetWorld()->SpawnActor<AActor>(PickupClass[FMath::Rand() % PickupClass.Num()], GetActorTransform());
 	}
 	
 	// spawn the NPC destruction proxy

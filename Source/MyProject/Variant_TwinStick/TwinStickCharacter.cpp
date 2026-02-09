@@ -18,6 +18,8 @@
 #include "Stats/ArmorComponent.h"
 #include "UI/PlayerHUDWidget.h"
 #include "EnhancedInputSubsystems.h"
+#include <Variant_TwinStick/AI/SpawnersController.h>
+#include <Kismet/GameplayStatics.h>
 
 ATwinStickCharacter::ATwinStickCharacter()
 {
@@ -85,6 +87,8 @@ void ATwinStickCharacter::BeginPlay()
 
 		PlayerController->bShowMouseCursor = bUsingMouse;
 	}
+
+	if (UPlayerHUDWidget::Instance != nullptr) UPlayerHUDWidget::Instance->SetHolyBombs(FText::FromString(FString::FromInt(Items)));
 }
 
 void ATwinStickCharacter::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -123,6 +127,17 @@ void ATwinStickCharacter::NotifyControllerChanged()
 void ATwinStickCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	SurvivalTime += DeltaTime;
+
+	FTimespan TimeStruct = FTimespan::FromSeconds(SurvivalTime);
+
+	FString TimeString = FString::Printf(TEXT("%02d:%02d"), TimeStruct.GetMinutes(), TimeStruct.GetSeconds());
+
+	if (UPlayerHUDWidget::Instance != nullptr)
+	{
+		UPlayerHUDWidget::Instance->SetTimeValue(FText::FromString(TimeString));
+	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("%f"), Health);
 	StaminaComp->Restore(DeltaTime* StaminaRegen);
@@ -336,6 +351,8 @@ void ATwinStickCharacter::DoAoEAttack()
 
 			// update the items count
 			UpdateItems();
+
+			if (UPlayerHUDWidget::Instance != nullptr) UPlayerHUDWidget::Instance->SetHolyBombs(FText::FromString(FString::FromInt(Items)));
 		}
 	}
 }
@@ -345,16 +362,29 @@ void ATwinStickCharacter::HandleDamage(float Damage, const FVector& DamageDirect
 	if (ArmorComp->CurrentValue > 0)
 	{
 		ArmorComp->ApplyDamage(1.f);
+		if (DamageSound) UGameplayStatics::PlaySoundAtLocation(this, DamageSound, GetActorLocation());
 	}
 	else
 	{
 		if (HealthComp->CurrentValue > Damage)
 		{
 			HealthComp->ApplyDamage(Damage);
+			if (DamageSound) UGameplayStatics::PlaySoundAtLocation(this, DamageSound, GetActorLocation());
 		}
 		else
 		{
-			Death();
+			if (DeathSound) UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
+
+			FTimespan TimeStruct = FTimespan::FromSeconds(SurvivalTime);
+
+			FString TimeString = FString::Printf(TEXT("%02d:%02d"), TimeStruct.GetMinutes(), TimeStruct.GetSeconds());
+			// With this:
+			Death(FText::Format(
+				FText::FromString(TEXT("Score {0}\nWawe {1}\n Time {2}")),
+				FText::FromString(FString::FromInt(Cast<ATwinStickGameMode>(GetWorld()->GetAuthGameMode())->Score)),
+				FText::FromString(FString::FromInt(ASpawnersController::Instance->waweNumber)),
+				FText::FromString(TimeString)
+			));
 		}
 	}
 	// calculate the knockback vector
@@ -382,12 +412,23 @@ void ATwinStickCharacter::UpdateHealth()
 	//	Death();
 	//}
 }
-
+/*
 void ATwinStickCharacter::Death()
 {
-	Destroy();
-}
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		APlayerController* PC = Cast<APlayerController>(GetController());
+		UGameplayStatics::SetGamePaused(World, true);
+		if (PC)
+		{
+			PC->SetPause(true);
+		}
+	}
 
+
+}
+*/
 void ATwinStickCharacter::AddPickup()
 {
 	// increase the item count
@@ -395,6 +436,8 @@ void ATwinStickCharacter::AddPickup()
 
 	// update the items counter
 	UpdateItems();
+
+	if (UPlayerHUDWidget::Instance != nullptr) UPlayerHUDWidget::Instance->SetHolyBombs(FText::FromString(FString::FromInt(Items)));
 }
 
 void ATwinStickCharacter::UpdateItems()

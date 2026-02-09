@@ -6,6 +6,7 @@
 #include "Engine/World.h"
 #include "TimerManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "UI/PlayerHUDWidget.h"
 
 void ATwinStickGameMode::BeginPlay()
 {
@@ -31,7 +32,9 @@ void ATwinStickGameMode::ItemUsed(int32 Value)
 void ATwinStickGameMode::ScoreUpdate(int32 Value)
 {
 	// multiply the base score by the combo multiplier and add it to the score
-	Score += Value * Combo;
+	Score += Value;
+
+	if (UPlayerHUDWidget::Instance != nullptr) UPlayerHUDWidget::Instance->OnScoreChanged(FText::FromString(FString::FromInt(Score)));
 
 	// update the UI
 	UIWidget->UpdateScore(Score);

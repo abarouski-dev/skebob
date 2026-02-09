@@ -21,6 +21,9 @@ public:
     UPROPERTY(EditDefaultsOnly, Category = "Shooting")
     float MuzzleOffset = 100.0f;
 
+    UPROPERTY(EditAnywhere, Category = "Audio")
+    USoundBase* FireSound;
+
 protected:
     virtual void Fire() override;
 };
