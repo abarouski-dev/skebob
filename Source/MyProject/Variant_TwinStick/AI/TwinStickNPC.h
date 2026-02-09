@@ -57,6 +57,15 @@ public:
 	UPROPERTY(EditAnywhere, Category = "NPC")
 	float healse = 3;
 
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* HitPlayerSound;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* DeathSound;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* TakeDamageSound;
+
 public:
 
 	/** Constructor */

@@ -361,15 +361,18 @@ void ATwinStickCharacter::HandleDamage(float Damage, const FVector& DamageDirect
 	if (ArmorComp->CurrentValue > 0)
 	{
 		ArmorComp->ApplyDamage(1.f);
+		if (DamageSound) UGameplayStatics::PlaySoundAtLocation(this, DamageSound, GetActorLocation());
 	}
 	else
 	{
 		if (HealthComp->CurrentValue > Damage)
 		{
 			HealthComp->ApplyDamage(Damage);
+			if (DamageSound) UGameplayStatics::PlaySoundAtLocation(this, DamageSound, GetActorLocation());
 		}
 		else
 		{
+			if (DeathSound) UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
 			Death();
 		}
 	}

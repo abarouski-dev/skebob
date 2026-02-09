@@ -53,6 +53,14 @@ public:
 
     int32 CurrentAmmo;
 
+    UPROPERTY(EditDefaultsOnly, Category = "Audio")
+    USoundBase* ContinuousFireSound;
+
+    UPROPERTY()
+    UAudioComponent* FireAudioComp;
+
+    void PlayFlamethrowerLoop(bool bStart);
+
 protected:
     bool bIsReloading = false;
     FTimerHandle TimerHandle_HandleFiring;

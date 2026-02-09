@@ -12,6 +12,7 @@
 #include "TwinStickNPCDestruction.h"
 #include "TimerManager.h"
 #include <Variant_TwinStick/AI/SpawnersController.h>
+#include "Kismet/GameplayStatics.h"
 
 TArray<ATwinStickNPC*> ATwinStickNPC::NPCs = TArray<ATwinStickNPC*>();
 
@@ -98,7 +99,6 @@ void ATwinStickNPC::Destroyed()
 		SpawnParams.Owner = this;
 		SpawnParams.Instigator = GetInstigator();
 
-		// ����� ���������� ������
 		AActor* SpawnedActor = World->SpawnActor<AActor>(ClassToSpawn, GetActorLocation(), FRotator::ZeroRotator, SpawnParams);
 		UE_LOG(LogTemp, Warning, TEXT("Spawn Sucesfull"));
 	}
@@ -109,10 +109,9 @@ void ATwinStickNPC::Destroyed()
 
 void ATwinStickNPC::NotifyHit(class UPrimitiveComponent* MyComp, AActor* Other, class UPrimitiveComponent* OtherComp, bool bSelfMoved, FVector HitLocation, FVector HitNormal, FVector NormalImpulse, const FHitResult& Hit)
 {
-	// have we collided against the player?
 	if (ATwinStickCharacter* PlayerCharacter = Cast<ATwinStickCharacter>(Other))
 	{
-		// apply damage to the character
+		if (HitPlayerSound) UGameplayStatics::PlaySoundAtLocation(this, HitPlayerSound, GetActorLocation());
 		PlayerCharacter->HandleDamage(1.0f * ASpawnersController::Instance->EnemyDamageMultyplayer, GetActorForwardVector());
 	}
 }
@@ -125,9 +124,13 @@ void ATwinStickNPC::ProjectileImpact(const FVector& ForwardVector, float damage)
 		SafeMultiplier = ASpawnersController::Instance->EnemyHPMultyplayer;
 	}
 	healse -= damage / SafeMultiplier;
-	if (healse > 0) return;
+	if (healse > 0) 
+	{
+		if (TakeDamageSound) UGameplayStatics::PlaySoundAtLocation(this, TakeDamageSound, GetActorLocation());
+		return;
+	}
 
-
+	if (!bHit && DeathSound) UGameplayStatics::PlaySoundAtLocation(this, DeathSound, GetActorLocation());
 
 	// only handle damage if we haven't been hit yet
 	if (bHit)

@@ -276,6 +276,12 @@ public:
 
 	float SurvivalTime = 0.0f;
 
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* DamageSound;
+
+	UPROPERTY(EditAnywhere, Category = "Audio")
+	USoundBase* DeathSound;
+
 protected:
 
 	UPROPERTY()
