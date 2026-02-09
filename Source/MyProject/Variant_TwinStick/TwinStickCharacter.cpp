@@ -18,6 +18,7 @@
 #include "Stats/ArmorComponent.h"
 #include "UI/PlayerHUDWidget.h"
 #include "EnhancedInputSubsystems.h"
+#include <Variant_TwinStick/AI/SpawnersController.h>
 #include <Kismet/GameplayStatics.h>
 
 ATwinStickCharacter::ATwinStickCharacter()
@@ -370,7 +371,17 @@ void ATwinStickCharacter::HandleDamage(float Damage, const FVector& DamageDirect
 		}
 		else
 		{
-			Death();
+
+			FTimespan TimeStruct = FTimespan::FromSeconds(SurvivalTime);
+
+			FString TimeString = FString::Printf(TEXT("%02d:%02d"), TimeStruct.GetMinutes(), TimeStruct.GetSeconds());
+			// With this:
+			Death(FText::Format(
+				FText::FromString(TEXT("Score {0}\nWawe {1}\n Time {2}")),
+				FText::FromString(FString::FromInt(Cast<ATwinStickGameMode>(GetWorld()->GetAuthGameMode())->Score)),
+				FText::FromString(FString::FromInt(ASpawnersController::Instance->waweNumber)),
+				FText::FromString(TimeString)
+			));
 		}
 	}
 	// calculate the knockback vector

@@ -207,7 +207,7 @@ protected:
 	void UpdateHealth();
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "Health HP")
-	void Death();
+	void Death(const FText& t);
 
 public:
 

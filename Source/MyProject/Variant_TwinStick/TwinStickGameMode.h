@@ -26,9 +26,6 @@ protected:
 	/** Pointer to the spawned UI Widget */
 	TObjectPtr<UTwinStickUI> UIWidget;
 
-	/** Current game score */
-	int32 Score = 0;
-
 	/** Current combo multiplier */
 	int32 Combo = 1;
 
@@ -61,6 +58,8 @@ protected:
 
 public:
 
+	/** Current game score */
+	int32 Score = 0;
 	/** Gameplay initialization */
 	virtual void BeginPlay() override;
 

@@ -52,7 +52,7 @@ void ATwinStickProjectile::NotifyHit(class UPrimitiveComponent* MyComp, AActor* 
 	{
 		// tell the NPC it's been hit
 		NPC->ProjectileImpact(FVector::ZeroVector, damage);
-
+		CreateBlood();
 		// destroy this projectile
 		Destroy();
 	}
