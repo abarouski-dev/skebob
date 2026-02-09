@@ -27,6 +27,7 @@ void ABaseWeapon::StartFire()
 void ABaseWeapon::StopFire()
 {
     GetWorldTimerManager().ClearTimer(TimerHandle_HandleFiring);
+    EndParticle();
 }
 
 void ABaseWeapon::Fire()
@@ -44,6 +45,7 @@ void ABaseWeapon::Fire()
 void ABaseWeapon::Reload()
 {
     if (bIsReloading) return;
+    EndParticle();
 
     bIsReloading = true;
 

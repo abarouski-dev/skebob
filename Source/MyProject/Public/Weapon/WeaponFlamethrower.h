@@ -20,4 +20,5 @@ public:
 
 protected:
     virtual void Fire() override;
+
 };
